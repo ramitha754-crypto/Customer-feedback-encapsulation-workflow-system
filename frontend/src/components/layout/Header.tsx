@@ -42,29 +42,20 @@ export const Header: React.FC<HeaderProps> = ({
       top: 0,
       zIndex: 40,
       backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
       transition: 'background-color 0.25s ease, border-color 0.25s ease'
     }}>
-      <div style={{
-        maxWidth: '1440px',
-        margin: '0 auto',
-        padding: '0 24px',
-        height: '64px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '16px'
-      }}>
-        {/* Brand Logo & System Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            cursor: 'pointer',
-          }} onClick={() => setCurrentTab('feedback')}>
+      <div className="header-container">
+        {/* Left Section: Brand Logo & System Info */}
+        <div className="header-brand">
+          <div 
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }}
+            onClick={() => setCurrentTab('feedback')}
+            title="EncapFlow Home"
+          >
             <div style={{
-              width: '36px',
-              height: '36px',
+              width: '34px',
+              height: '34px',
               backgroundColor: 'var(--text-primary)',
               borderRadius: '8px',
               display: 'flex',
@@ -72,117 +63,106 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center',
               color: 'var(--text-inverse)',
               fontWeight: 700,
-              boxShadow: 'var(--shadow-sm)'
+              boxShadow: 'var(--shadow-sm)',
+              flexShrink: 0
             }}>
-              <Layers size={20} />
+              <Layers size={18} />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
                   ENCAP<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>FLOW</span>
                 </span>
-                <span className="badge" style={{ backgroundColor: 'var(--bg-card-active)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}>
+                <span className="badge" style={{ backgroundColor: 'var(--bg-card-active)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)', padding: '1px 6px', fontSize: '0.65rem' }}>
                   ENT v4.2
                 </span>
               </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span className="pulse-dot"></span>
+              <div className="header-brand-subtitle">
+                <span className="pulse-dot" style={{ marginRight: 6 }}></span>
                 <span>Feedback Encapsulation Engine</span>
               </div>
             </div>
           </div>
+          <div className="header-divider header-brand-divider"></div>
         </div>
 
-        {/* Center Navigation Tabs */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {/* Center Section: Navigation Tabs */}
+        <nav className="header-nav">
           <button
-            className={`btn ${currentTab === 'feedback' ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn header-nav-btn ${currentTab === 'feedback' ? 'active' : 'btn-ghost'}`}
             onClick={() => setCurrentTab('feedback')}
-            style={{ height: '38px', padding: '0 14px', fontSize: '0.85rem' }}
           >
-            <Inbox size={16} />
+            <Inbox size={15} />
             <span>Feedback Ingestion</span>
           </button>
 
           <button
-            className={`btn ${currentTab === 'encapsulation' ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn header-nav-btn ${currentTab === 'encapsulation' ? 'active' : 'btn-ghost'}`}
             onClick={() => setCurrentTab('encapsulation')}
-            style={{ height: '38px', padding: '0 14px', fontSize: '0.85rem' }}
           >
-            <Cpu size={16} />
+            <Cpu size={15} />
             <span>Encapsulation Engine</span>
           </button>
 
           <button
-            className={`btn ${currentTab === 'workflow' ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn header-nav-btn ${currentTab === 'workflow' ? 'active' : 'btn-ghost'}`}
             onClick={() => setCurrentTab('workflow')}
-            style={{ height: '38px', padding: '0 14px', fontSize: '0.85rem' }}
           >
-            <GitPullRequest size={16} />
+            <GitPullRequest size={15} />
             <span>Workflow Pipeline</span>
           </button>
 
           <button
-            className={`btn ${currentTab === 'analytics' ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn header-nav-btn ${currentTab === 'analytics' ? 'active' : 'btn-ghost'}`}
             onClick={() => setCurrentTab('analytics')}
-            style={{ height: '38px', padding: '0 14px', fontSize: '0.85rem' }}
           >
-            <BarChart3 size={16} />
+            <BarChart3 size={15} />
             <span>SLA & Analytics</span>
           </button>
         </nav>
 
-        {/* Right Action Bar, Theme Switcher & Persona Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Theme Toggle Button */}
+        {/* Right Section: Theme, Action & Persona Selector */}
+        <div className="header-actions">
+          {/* Theme Switcher Button */}
           <button
             className="btn btn-outline"
             onClick={onToggleTheme}
-            title={`Switch to ${theme === 'dark' ? 'Light Monochromatic' : 'Dark Monochromatic'} Theme`}
-            style={{ height: '36px', padding: '0 10px', fontSize: '0.8rem' }}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Theme`}
+            style={{ height: '34px', padding: '0 10px', fontSize: '0.78rem', flexShrink: 0 }}
           >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-            <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            <span className="header-btn-label">{theme === 'dark' ? 'Light' : 'Dark'}</span>
           </button>
 
-          {/* Submit New Feedback Button */}
+          {/* New Feedback Action Button */}
           <button 
-            className="btn btn-secondary" 
+            className="btn btn-primary" 
             onClick={onOpenSubmitModal}
-            style={{ height: '36px', fontSize: '0.8rem', padding: '0 12px' }}
+            style={{ height: '34px', fontSize: '0.78rem', padding: '0 12px', flexShrink: 0 }}
           >
-            <Plus size={15} />
-            <span>New Feedback</span>
+            <Plus size={14} />
+            <span className="header-btn-label">New Feedback</span>
           </button>
 
-          <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-medium)' }}></div>
+          <div className="header-divider"></div>
 
-          {/* Quick Demo Persona Switcher */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+          {/* Enterprise Persona Selector */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <div className="header-user-info">
+              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {currentUser.name}
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
                 {currentUser.title}
               </div>
             </div>
 
             <select
+              className="header-select"
               value={currentUser.id}
               onChange={(e) => {
                 const found = mockPersonas.find(p => p.id === e.target.value);
                 if (found) setCurrentUser(found);
-              }}
-              style={{
-                backgroundColor: 'var(--bg-card-hover)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-medium)',
-                borderRadius: '6px',
-                padding: '4px 8px',
-                fontSize: '0.75rem',
-                cursor: 'pointer',
-                outline: 'none',
               }}
               title="Switch Demo Persona"
             >
@@ -194,14 +174,14 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          {/* Login Screen / Sign Out Button */}
+          {/* Logout Button */}
           <button 
             className="btn btn-ghost" 
             onClick={onLogout}
-            title="Lock & Go to Login Screen"
-            style={{ padding: '6px', color: 'var(--text-muted)' }}
+            title="Lock Session & Return to Login Screen"
+            style={{ width: '34px', height: '34px', padding: 0, color: 'var(--text-muted)', flexShrink: 0 }}
           >
-            <Lock size={16} />
+            <Lock size={15} />
           </button>
         </div>
       </div>

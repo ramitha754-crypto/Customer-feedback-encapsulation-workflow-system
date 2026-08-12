@@ -8,7 +8,7 @@ import {
   Plus, 
   Sun,
   Moon,
-  Lock,
+  LogOut,
   Users
 } from 'lucide-react';
 import type { UserPersona } from '../../types/feedback';
@@ -192,12 +192,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
           
           <button 
-            className="btn btn-ghost" 
+            className="btn btn-ghost"
             onClick={onLogout}
-            title="Lock Session & Return to Login Screen"
-            style={{ width: '36px', height: '36px', padding: 0, color: 'var(--text-muted)' }}
+            title="Logout"
+            style={{ height: '36px', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <Lock size={16} />
+            <LogOut size={16} />
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Logout</span>
           </button>
         </div>
       </div>

@@ -45,9 +45,11 @@
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-medium: rgba(0, 0, 0, 0.15);
   --border-bright: rgba(0, 0, 0, 0.3);
-  --border-white: #09090b;
+  /* avoid pure black in light mode - use dark grey */
+  --border-white: #374151;
   
-  --text-primary: #09090b;
+  /* Use grey tones instead of near-black */
+  --text-primary: #374151; /* slate-700 */
   --text-secondary: #52525b;
   --text-muted: #71717a;
   --text-dim: #a1a1aa;

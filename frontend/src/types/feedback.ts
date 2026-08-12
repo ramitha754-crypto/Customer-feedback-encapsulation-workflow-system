@@ -85,4 +85,5 @@ export interface UserPersona {
   avatar: string;
   email: string;
   permissions: string[];
+  token?: string;
 }

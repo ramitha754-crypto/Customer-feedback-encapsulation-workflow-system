@@ -8,6 +8,7 @@ interface FeedbackListProps {
   onOpenSubmitModal: () => void;
   onOpenDetails: (item: FeedbackItem) => void;
   onStartEncapsulation: (item: FeedbackItem) => void;
+  canCreateFeedback: boolean;
 }
 
 export const FeedbackList: React.FC<FeedbackListProps> = ({
@@ -15,6 +16,7 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
   onOpenSubmitModal,
   onOpenDetails,
   onStartEncapsulation,
+  canCreateFeedback,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<string>('ALL');
@@ -55,10 +57,10 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
         gap: '16px'
       }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fafafa', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
             Customer Feedback Ingestion Queue
           </h1>
-          <p style={{ fontSize: '0.85rem', color: '#a1a1aa', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             Real-time feed of enterprise customer tickets, SLA tracking, and feature requests.
           </p>
         </div>
@@ -66,9 +68,10 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
         <button 
           className="btn btn-primary btn-lg"
           onClick={onOpenSubmitModal}
+          disabled={!canCreateFeedback}
         >
           <Plus size={18} />
-          <span>Ingest New Feedback</span>
+          <span>{canCreateFeedback ? 'Ingest New Feedback' : 'Create feedback restricted'}</span>
         </button>
       </div>
 
@@ -80,53 +83,53 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
         marginBottom: '32px'
       }}>
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#a1a1aa', fontSize: '0.8rem', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '8px' }}>
             <span>Total Ingested Tickets</span>
             <Layers size={16} />
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fafafa' }}>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {totalCount}
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             Active across 5 Key Enterprise Accounts
           </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#a1a1aa', fontSize: '0.8rem', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '8px' }}>
             <span>Encapsulation Rate</span>
             <Cpu size={16} />
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fafafa' }}>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {encapsulationRate}%
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             {encapsulatedCount} of {totalCount} items converted to Specs
           </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#a1a1aa', fontSize: '0.8rem', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '8px' }}>
             <span>SLA Breaches</span>
             <ShieldAlert size={16} />
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: slaBreachedCount > 0 ? '#fafafa' : '#a1a1aa' }}>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: slaBreachedCount > 0 ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
             {slaBreachedCount}
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             {slaBreachedCount > 0 ? 'Requires immediate PM intervention' : 'All accounts within target SLA'}
           </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#a1a1aa', fontSize: '0.8rem', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '8px' }}>
             <span>At-Risk Revenue Impact</span>
             <DollarSign size={16} />
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fafafa' }}>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             $4.45M
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             Combined ARR across active tickets
           </div>
         </div>
@@ -143,7 +146,7 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
       }}>
         {/* Search Box */}
         <div style={{ flex: 1, minWidth: '260px', position: 'relative' }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#71717a' }} />
+          <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="text"
             className="input"
@@ -156,7 +159,7 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
 
         {/* Stage Filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Filter size={14} style={{ color: '#71717a' }} />
+          <Filter size={14} style={{ color: 'var(--text-muted)' }} />
           <select
             className="select"
             value={selectedStage}
@@ -220,7 +223,7 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
         </div>
       ) : (
         <div className="glass-panel" style={{ padding: '48px', textAlign: 'center' }}>
-          <div style={{ color: '#71717a', fontSize: '1rem', marginBottom: '8px' }}>
+          <div style={{ color: 'var(--text-muted)', fontSize: '1rem', marginBottom: '8px' }}>
             No feedback entries match your current filter criteria.
           </div>
           <button 

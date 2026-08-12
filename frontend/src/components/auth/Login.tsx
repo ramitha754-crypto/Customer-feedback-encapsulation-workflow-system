@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Layers, ShieldCheck, ArrowRight, KeyRound, CheckCircle2, User, Sun, Moon } from 'lucide-react';
+import { Layers, ArrowRight, Sun, Moon, AlertCircle } from 'lucide-react';
 import type { UserPersona } from '../../types/feedback';
-import { mockPersonas } from '../../data/mockData';
 
 interface LoginProps {
   onLogin: (user: UserPersona) => void;
@@ -10,24 +9,47 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) => {
-  const [selectedPersona, setSelectedPersona] = useState<UserPersona>(mockPersonas[0]);
-  const [email, setEmail] = useState(mockPersonas[0].email);
-  const [password, setPassword] = useState('••••••••••••');
-  const [authMode, setAuthMode] = useState<'sso' | 'credentials'>('sso');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handlePersonaSelect = (persona: UserPersona) => {
-    setSelectedPersona(persona);
-    setEmail(persona.email);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      let data: any = {};
+      const responseText = await response.text();
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          data = {};
+        }
+      }
+
+      if (!response.ok) {
+        const message = data.error || 'Please check your username and password and try again.';
+        throw new Error(message);
+      }
+
+      onLogin(data as UserPersona);
+    } catch (err: any) {
+      setError(err.message || 'Please check your username and password and try again.');
+    } finally {
       setIsLoading(false);
-      onLogin(selectedPersona);
-    }, 600);
+    }
   };
 
   return (
@@ -65,7 +87,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
 
       <div style={{
         width: '100%',
-        maxWidth: '480px',
+        maxWidth: '420px',
         position: 'relative',
         zIndex: 1,
       }}>
@@ -95,88 +117,59 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
 
         {/* Main Monochromatic Card */}
         <div className="glass-panel" style={{ padding: '32px' }}>
-          {/* Auth Mode Toggle */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            backgroundColor: 'var(--bg-dark)',
-            padding: '4px',
-            borderRadius: '8px',
-            marginBottom: '24px',
-            border: '1px solid var(--border-subtle)'
-          }}>
-            <button
-              type="button"
-              className={`btn ${authMode === 'sso' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setAuthMode('sso')}
-              style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-            >
-              <ShieldCheck size={14} />
-              Enterprise SSO
-            </button>
-            <button
-              type="button"
-              className={`btn ${authMode === 'credentials' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setAuthMode('credentials')}
-              style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-            >
-              <KeyRound size={14} />
-              Credentials
-            </button>
+          <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)' }}>Welcome Back</h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Sign in to continue to the dashboard</p>
           </div>
+
+          {error && (
+            <div style={{
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              color: '#ef4444',
+              padding: '12px',
+              borderRadius: '6px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '0.85rem'
+            }}>
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Enterprise Identity Email
+                Username
               </label>
               <input
-                type="email"
+                type="text"
                 className="input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                placeholder="user@enterprise.com"
+                placeholder="e.g. admin"
               />
             </div>
 
-            {authMode === 'credentials' && (
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Password
-                  </label>
-                  <a href="#forgot" onClick={(e) => e.preventDefault()} style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textDecoration: 'none' }}>
-                    Reset key?
-                  </a>
-                </div>
-                <input
-                  type="password"
-                  className="input"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Password
+                </label>
               </div>
-            )}
-
-            {authMode === 'sso' && (
-              <div style={{
-                padding: '12px',
-                backgroundColor: 'var(--bg-dark)',
-                borderRadius: '6px',
-                border: '1px solid var(--border-medium)',
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
-                <ShieldCheck size={18} style={{ color: 'var(--text-primary)' }} />
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                  Federated SAML 2.0 Auth active (Azure AD / Okta / Ping Identity)
-                </div>
-              </div>
-            )}
+              <input
+                type="password"
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+            </div>
 
             <button
               type="submit"
@@ -184,57 +177,14 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
               disabled={isLoading}
               style={{ width: '100%', height: '44px', fontSize: '0.9rem', marginBottom: '24px' }}
             >
-              {isLoading ? 'Authenticating Token...' : (
+              {isLoading ? 'Authenticating...' : (
                 <>
-                  <span>Sign In to Workflow Console</span>
+                  <span>Sign In</span>
                   <ArrowRight size={16} />
                 </>
               )}
             </button>
           </form>
-
-          {/* Persona Demo Switcher Preset Box */}
-          <div style={{
-            borderTop: '1px solid var(--border-medium)',
-            paddingTop: '20px',
-          }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <User size={12} />
-              <span>Quick Login as Persona (Demo Presets):</span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              {mockPersonas.map((persona) => {
-                const isSelected = selectedPersona.id === persona.id;
-                return (
-                  <button
-                    key={persona.id}
-                    type="button"
-                    onClick={() => handlePersonaSelect(persona)}
-                    style={{
-                      backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-dark)',
-                      border: `1px solid ${isSelected ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
-                      borderRadius: '6px',
-                      padding: '8px 10px',
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 600, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
-                        {persona.name.split(' ')[0]}
-                      </span>
-                      {isSelected && <CheckCircle2 size={12} style={{ color: 'var(--text-primary)' }} />}
-                    </div>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                      {persona.role.replace('_', ' ')}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
         </div>
 
         {/* Footer Security Badges */}
@@ -250,8 +200,6 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
           <span>SOC2 Type II Certified</span>
           <span>•</span>
           <span>ISO 27001 Encrypted</span>
-          <span>•</span>
-          <span>256-Bit TLS</span>
         </div>
       </div>
     </div>

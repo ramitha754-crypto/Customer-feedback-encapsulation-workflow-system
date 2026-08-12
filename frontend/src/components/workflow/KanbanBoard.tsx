@@ -19,6 +19,9 @@ interface KanbanBoardProps {
   onOpenDetails: (item: FeedbackItem) => void;
   onStartEncapsulation: (item: FeedbackItem) => void;
   onOpenSubmitModal: () => void;
+  canSubmitFeedback: boolean;
+  canEncapsulate: boolean;
+  canTransition: boolean;
 }
 
 const STAGES: { id: WorkflowStage; label: string; icon: React.ReactNode; description: string }[] = [
@@ -36,6 +39,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onOpenDetails,
   onStartEncapsulation,
   onOpenSubmitModal,
+  canSubmitFeedback,
+  canEncapsulate,
+  canTransition,
 }) => {
   const [filterTier, setFilterTier] = useState<string>('ALL');
 
@@ -73,10 +79,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         gap: '16px'
       }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fafafa', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
             Encapsulation Workflow Pipeline
           </h1>
-          <p style={{ fontSize: '0.85rem', color: '#a1a1aa', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             Track feedback progression from raw customer ingestion to encapsulated spec and sprint release.
           </p>
         </div>
@@ -98,9 +104,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           <button 
             className="btn btn-primary"
             onClick={onOpenSubmitModal}
+            disabled={!canSubmitFeedback}
           >
             <Plus size={16} />
-            <span>Ingest Feedback</span>
+            <span>{canSubmitFeedback ? 'Ingest Feedback' : 'Create feedback restricted'}</span>
           </button>
         </div>
       </div>
@@ -120,7 +127,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <div
               key={stage.id}
               style={{
-                backgroundColor: '#121215',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '10px',
                 border: '1px solid var(--border-medium)',
                 display: 'flex',
@@ -133,20 +140,20 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               <div style={{
                 padding: '14px',
                 borderBottom: '1px solid var(--border-medium)',
-                backgroundColor: '#09090b',
+                backgroundColor: 'var(--text-inverse)',
                 borderTopLeftRadius: '10px',
                 borderTopRightRadius: '10px'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.85rem', color: '#fafafa' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
                     {stage.icon}
                     <span>{stage.label}</span>
                   </div>
-                  <span className="badge" style={{ backgroundColor: '#27272a', color: '#fafafa', borderRadius: '12px', padding: '2px 8px' }}>
+                  <span className="badge" style={{ backgroundColor: 'var(--bg-card-active)', color: 'var(--text-primary)', borderRadius: '12px', padding: '2px 8px' }}>
                     {stageItems.length}
                   </span>
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#71717a' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
                   {stage.description}
                 </div>
               </div>
@@ -170,7 +177,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       className="glass-panel"
                       style={{
                         padding: '14px',
-                        backgroundColor: '#18181b',
+                        backgroundColor: 'var(--bg-card-hover)',
                         border: '1px solid var(--border-medium)',
                         borderRadius: '8px',
                         cursor: 'pointer',
@@ -180,7 +187,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     >
                       {/* Ticket Code & Priority */}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span className="font-mono" style={{ fontSize: '0.7rem', fontWeight: 600, color: '#a1a1aa' }}>
+                        <span className="font-mono" style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                           {item.code}
                         </span>
                         {item.priority === 'P0_CRITICAL' ? (
@@ -193,7 +200,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       </div>
 
                       {/* Account Name */}
-                      <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
                         {item.account.name}
                       </div>
 
@@ -201,7 +208,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       <div style={{
                         fontSize: '0.82rem',
                         fontWeight: 600,
-                        color: '#fafafa',
+                        color: 'var(--text-primary)',
                         lineHeight: 1.3,
                         marginBottom: '10px',
                         display: '-webkit-box',
@@ -216,12 +223,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {item.isSlaBreached && (
                         <div style={{
                           padding: '4px 6px',
-                          backgroundColor: '#09090b',
-                          border: '1px solid #ffffff',
+                          backgroundColor: 'var(--text-inverse)',
+                          border: '1px solid var(--text-primary)',
                           borderRadius: '4px',
                           marginBottom: '8px',
                           fontSize: '0.65rem',
-                          color: '#ffffff',
+                          color: 'var(--text-primary)',
                           fontWeight: 700,
                           display: 'flex',
                           alignItems: 'center',
@@ -235,8 +242,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {item.encapsulatedSpec && (
                         <div style={{
                           fontSize: '0.68rem',
-                          color: '#fafafa',
-                          backgroundColor: '#09090b',
+                          color: 'var(--text-primary)',
+                          backgroundColor: 'var(--text-inverse)',
                           padding: '4px 6px',
                           borderRadius: '4px',
                           border: '1px dashed var(--border-bright)',
@@ -246,7 +253,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           justifyContent: 'space-between'
                         }}>
                           <span>Spec Encapsulated</span>
-                          <span className="font-mono" style={{ color: '#a1a1aa' }}>{item.encapsulatedSpec.confidenceScore}% Fit</span>
+                          <span className="font-mono" style={{ color: 'var(--text-secondary)' }}>{item.encapsulatedSpec.confidenceScore}% Fit</span>
                         </div>
                       )}
 
@@ -258,35 +265,39 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         {prevStage ? (
                           <button
                             className="btn btn-ghost btn-sm"
-                            style={{ padding: '2px 6px', fontSize: '0.68rem', color: '#71717a' }}
-                            onClick={() => onStageChange(item.id, prevStage)}
-                            title={`Move back to ${prevStage}`}
+                            style={{ padding: '2px 6px', fontSize: '0.68rem', color: 'var(--text-muted)' }}
+                            onClick={() => canTransition ? onStageChange(item.id, prevStage) : undefined}
+                            title={canTransition ? `Move back to ${prevStage}` : 'Workflow transition is restricted'}
+                            disabled={!canTransition}
                           >
                             <ArrowLeft size={12} />
                           </button>
                         ) : <div />}
-
+ 
                         {!item.encapsulatedSpec && item.stage === 'triaged' ? (
                           <button
                             className="btn btn-primary btn-sm"
                             style={{ padding: '2px 8px', fontSize: '0.68rem' }}
-                            onClick={() => onStartEncapsulation(item)}
+                            onClick={() => canEncapsulate ? onStartEncapsulation(item) : undefined}
+                            disabled={!canEncapsulate}
+                            title={canEncapsulate ? 'Encapsulate item' : 'Encapsulation access is restricted'}
                           >
                             <Cpu size={11} />
-                            Encapsulate
+                            <span>{canEncapsulate ? 'Encapsulate' : 'No access'}</span>
                           </button>
                         ) : nextStage ? (
                           <button
                             className="btn btn-secondary btn-sm"
                             style={{ padding: '2px 8px', fontSize: '0.68rem' }}
-                            onClick={() => onStageChange(item.id, nextStage)}
-                            title={`Advance to ${nextStage}`}
+                            onClick={() => canTransition ? onStageChange(item.id, nextStage) : undefined}
+                            title={canTransition ? `Advance to ${nextStage}` : 'Workflow transition is restricted'}
+                            disabled={!canTransition}
                           >
                             <span>Advance</span>
                             <ArrowRight size={12} />
                           </button>
                         ) : (
-                          <span style={{ fontSize: '0.65rem', color: '#71717a' }}>Complete</span>
+                          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Complete</span>
                         )}
                       </div>
                     </div>
@@ -297,7 +308,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   <div style={{
                     padding: '24px 12px',
                     textAlign: 'center',
-                    color: '#52525b',
+                    color: 'var(--text-dim)',
                     fontSize: '0.75rem',
                     border: '1px dashed var(--border-subtle)',
                     borderRadius: '6px'

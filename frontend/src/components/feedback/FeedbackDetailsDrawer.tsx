@@ -17,6 +17,9 @@ interface FeedbackDetailsDrawerProps {
   onAddComment: (feedbackId: string, message: string) => void;
   onStartEncapsulation: (item: FeedbackItem) => void;
   currentUser: string;
+  canChangeStage: boolean;
+  canEncapsulate: boolean;
+  canComment: boolean;
 }
 
 export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
@@ -27,6 +30,9 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
   onAddComment,
   onStartEncapsulation,
   currentUser: _currentUser,
+  canChangeStage,
+  canEncapsulate,
+  canComment,
 }) => {
   const [commentInput, setCommentInput] = useState('');
 
@@ -62,17 +68,17 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
         <div style={{
           padding: '20px 24px',
           borderBottom: '1px solid var(--border-medium)',
-          backgroundColor: '#121215',
+          backgroundColor: 'var(--bg-card)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span className="font-mono" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#a1a1aa' }}>
+              <span className="font-mono" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                 {item.code}
               </span>
-              <span className="badge" style={{ backgroundColor: '#18181b', color: '#fafafa', border: '1px solid var(--border-medium)' }}>
+              <span className="badge" style={{ backgroundColor: 'var(--bg-card-hover)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)' }}>
                 {item.category.replace('_', ' ')}
               </span>
               {item.isSlaBreached && (
@@ -81,7 +87,7 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
                 </span>
               )}
             </div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fafafa', lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
               {item.title}
             </h2>
           </div>
@@ -107,14 +113,14 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
           {/* Stage Controls Bar */}
           <div style={{
             padding: '12px 16px',
-            backgroundColor: '#09090b',
+            backgroundColor: 'var(--text-inverse)',
             borderRadius: '8px',
             border: '1px solid var(--border-medium)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <div style={{ fontSize: '0.8rem', color: '#a1a1aa' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               Workflow Stage:
             </div>
             <select
@@ -122,6 +128,7 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
               value={item.stage}
               onChange={(e) => onStageChange(item.id, e.target.value as WorkflowStage)}
               style={{ width: '180px', fontSize: '0.8rem' }}
+              disabled={!canChangeStage}
             >
               <option value="inbox">Inbox</option>
               <option value="triaged">Triaged</option>
@@ -134,12 +141,12 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
 
           {/* Customer Account Snapshot */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
               Customer Account Details
             </div>
             <div style={{
               padding: '16px',
-              backgroundColor: '#121215',
+              backgroundColor: 'var(--bg-card)',
               borderRadius: '8px',
               border: '1px solid var(--border-subtle)',
               display: 'grid',
@@ -147,18 +154,18 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
               gap: '12px'
             }}>
               <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fafafa' }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {item.account.name}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#a1a1aa', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                   Tier: {item.account.tier.replace('_', ' ')}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div className="font-mono" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fafafa' }}>
+                <div className="font-mono" style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {item.account.annualRevenue}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#71717a', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                   Target SLA: {item.account.slaTierHours}h Max Window
                 </div>
               </div>
@@ -167,16 +174,16 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
 
           {/* Raw Verbatim Feedback */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
               Raw Feedback Message
             </div>
             <div style={{
               padding: '16px',
-              backgroundColor: '#09090b',
+              backgroundColor: 'var(--text-inverse)',
               borderRadius: '8px',
               border: '1px solid var(--border-subtle)',
               fontSize: '0.85rem',
-              color: '#a1a1aa',
+              color: 'var(--text-secondary)',
               lineHeight: 1.6,
               fontStyle: 'italic'
             }}>
@@ -187,19 +194,22 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
           {/* Encapsulated Spec Section */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                 Encapsulated Specification Document
               </div>
               {!item.encapsulatedSpec && (
                 <button
                   className="btn btn-primary btn-sm"
                   onClick={() => {
+                    if (!canEncapsulate) return;
                     onClose();
                     onStartEncapsulation(item);
                   }}
+                  disabled={!canEncapsulate}
+                  title={canEncapsulate ? 'Encapsulate Spec' : 'Encapsulation access is restricted'}
                 >
                   <Cpu size={12} />
-                  <span>Encapsulate Spec</span>
+                  <span>{canEncapsulate ? 'Encapsulate Spec' : 'Restricted'}</span>
                 </button>
               )}
             </div>
@@ -207,7 +217,7 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
             {item.encapsulatedSpec ? (
               <div style={{
                 padding: '20px',
-                backgroundColor: '#121215',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '8px',
                 border: '1px solid var(--border-medium)',
                 display: 'flex',
@@ -216,10 +226,10 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fafafa' }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                       {item.encapsulatedSpec.title}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#a1a1aa', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                       Encapsulated by {item.encapsulatedSpec.encapsulatedBy} • {new Date(item.encapsulatedSpec.encapsulatedAt).toLocaleDateString()}
                     </div>
                   </div>
@@ -229,28 +239,28 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
                     Core Problem Definition
                   </div>
-                  <p style={{ fontSize: '0.82rem', color: '#fafafa', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.4 }}>
                     {item.encapsulatedSpec.coreProblem}
                   </p>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
                     Business Impact & Risk
                   </div>
-                  <p style={{ fontSize: '0.82rem', color: '#fafafa', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.4 }}>
                     {item.encapsulatedSpec.businessImpact}
                   </p>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
                     Technical Scope Line Items
                   </div>
-                  <ul style={{ paddingLeft: '20px', fontSize: '0.8rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+                  <ul style={{ paddingLeft: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {item.encapsulatedSpec.technicalScope.map((pt, i) => (
                       <li key={i}>{pt}</li>
                     ))}
@@ -258,10 +268,10 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
                     Acceptance Criteria
                   </div>
-                  <ul style={{ paddingLeft: '20px', fontSize: '0.8rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+                  <ul style={{ paddingLeft: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {item.encapsulatedSpec.acceptanceCriteria.map((ac, i) => (
                       <li key={i}>{ac}</li>
                     ))}
@@ -271,7 +281,7 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
                 {item.encapsulatedSpec.targetEpicLink && (
                   <div style={{
                     padding: '8px 12px',
-                    backgroundColor: '#09090b',
+                    backgroundColor: 'var(--text-inverse)',
                     borderRadius: '6px',
                     border: '1px solid var(--border-subtle)',
                     display: 'flex',
@@ -279,8 +289,8 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
                     justifyContent: 'space-between',
                     fontSize: '0.78rem'
                   }}>
-                    <span style={{ color: '#a1a1aa' }}>Linked JIRA / Engineering Epic:</span>
-                    <span className="font-mono" style={{ color: '#fafafa', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Linked JIRA / Engineering Epic:</span>
+                    <span className="font-mono" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                       {item.encapsulatedSpec.targetEpicLink}
                     </span>
                   </div>
@@ -290,10 +300,10 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
               <div style={{
                 padding: '24px',
                 textAlign: 'center',
-                backgroundColor: '#09090b',
+                backgroundColor: 'var(--text-inverse)',
                 borderRadius: '8px',
                 border: '1px dashed var(--border-medium)',
-                color: '#71717a',
+                color: 'var(--text-muted)',
                 fontSize: '0.82rem'
               }}>
                 No encapsulated specification generated for this raw item yet.
@@ -303,7 +313,7 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
 
           {/* Audit Trail Timeline */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <History size={14} />
               <span>Audit Trail History</span>
             </div>
@@ -311,18 +321,18 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
               {item.auditTrail.map((log) => (
                 <div key={log.id} style={{
                   padding: '10px 12px',
-                  backgroundColor: '#09090b',
+                  backgroundColor: 'var(--text-inverse)',
                   borderRadius: '6px',
                   border: '1px solid var(--border-subtle)',
                   fontSize: '0.78rem'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                    <span style={{ fontWeight: 600, color: '#fafafa' }}>{log.actor} ({log.actorRole.replace('_', ' ')})</span>
-                    <span className="font-mono" style={{ color: '#71717a', fontSize: '0.7rem' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{log.actor} ({log.actorRole.replace('_', ' ')})</span>
+                    <span className="font-mono" style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
                       {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <div style={{ color: '#a1a1aa' }}>{log.details}</div>
+                  <div style={{ color: 'var(--text-secondary)' }}>{log.details}</div>
                 </div>
               ))}
             </div>
@@ -330,7 +340,7 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
 
           {/* Comments Section */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <MessageSquare size={14} />
               <span>Team Collaboration Thread ({item.comments.length})</span>
             </div>
@@ -339,34 +349,40 @@ export const FeedbackDetailsDrawer: React.FC<FeedbackDetailsDrawerProps> = ({
               {item.comments.map((cm) => (
                 <div key={cm.id} style={{
                   padding: '12px',
-                  backgroundColor: '#121215',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '8px',
                   border: '1px solid var(--border-subtle)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 600, color: '#fafafa' }}>{cm.author} ({cm.role})</span>
-                    <span className="font-mono" style={{ color: '#71717a' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{cm.author} ({cm.role})</span>
+                    <span className="font-mono" style={{ color: 'var(--text-muted)' }}>
                       {new Date(cm.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.82rem', color: '#a1a1aa' }}>{cm.message}</p>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{cm.message}</p>
                 </div>
               ))}
             </div>
 
             {/* Add Comment Input */}
-            <form onSubmit={handleCommentSubmit} style={{ display: 'flex', gap: '8px' }}>
-              <input
-                type="text"
-                className="input"
-                placeholder="Add internal note or PM comment..."
-                value={commentInput}
-                onChange={(e) => setCommentInput(e.target.value)}
-              />
-              <button type="submit" className="btn btn-secondary">
-                <Send size={14} />
-              </button>
-            </form>
+            {canComment ? (
+              <form onSubmit={handleCommentSubmit} style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="Add internal note or PM comment..."
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                />
+                <button type="submit" className="btn btn-secondary">
+                  <Send size={14} />
+                </button>
+              </form>
+            ) : (
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                Commenting is restricted for your role.
+              </div>
+            )}
           </div>
         </div>
       </div>

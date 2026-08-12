@@ -41,19 +41,19 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
       case 'NEGATIVE':
         return (
           <span title="Negative Customer Sentiment">
-            <TrendingDown size={14} style={{ color: '#fafafa' }} />
+            <TrendingDown size={14} style={{ color: 'var(--text-primary)' }} />
           </span>
         );
       case 'POSITIVE':
         return (
           <span title="Positive Feedback">
-            <TrendingUp size={14} style={{ color: '#fafafa' }} />
+            <TrendingUp size={14} style={{ color: 'var(--text-primary)' }} />
           </span>
         );
       default:
         return (
           <span title="Neutral Sentiment">
-            <Minus size={14} style={{ color: '#71717a' }} />
+            <Minus size={14} style={{ color: 'var(--text-muted)' }} />
           </span>
         );
     }
@@ -72,7 +72,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa' }}>
+            <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
               {item.code}
             </span>
             {renderPriorityBadge(item.priority)}
@@ -85,7 +85,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             {renderSentimentIcon()}
-            <span className="badge" style={{ backgroundColor: '#09090b', color: '#a1a1aa', border: '1px solid var(--border-subtle)' }}>
+            <span className="badge" style={{ backgroundColor: 'var(--text-inverse)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}>
               {item.stage.toUpperCase().replace('_', ' ')}
             </span>
           </div>
@@ -97,7 +97,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
           alignItems: 'center',
           gap: '8px',
           padding: '8px 10px',
-          backgroundColor: '#09090b',
+          backgroundColor: 'var(--text-inverse)',
           borderRadius: '6px',
           border: '1px solid var(--border-subtle)',
           marginBottom: '12px'
@@ -106,8 +106,8 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
             width: '24px',
             height: '24px',
             borderRadius: '4px',
-            backgroundColor: '#27272a',
-            color: '#fafafa',
+            backgroundColor: 'var(--bg-card-active)',
+            color: 'var(--text-primary)',
             fontSize: '0.7rem',
             fontWeight: 700,
             display: 'flex',
@@ -117,10 +117,10 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
             {item.account.logoInitial}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#fafafa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.account.name}
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#71717a' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
               {item.account.tier.replace('_', ' ')} • {item.account.annualRevenue}
             </div>
           </div>
@@ -130,7 +130,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
         <h3 style={{
           fontSize: '0.95rem',
           fontWeight: 600,
-          color: '#fafafa',
+          color: 'var(--text-primary)',
           lineHeight: 1.4,
           marginBottom: '8px',
           cursor: 'pointer'
@@ -140,7 +140,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
         <p style={{
           fontSize: '0.8rem',
-          color: '#a1a1aa',
+          color: 'var(--text-secondary)',
           lineHeight: 1.5,
           display: '-webkit-box',
           WebkitLineClamp: 3,
@@ -158,33 +158,33 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
         {item.encapsulatedSpec ? (
           <div style={{
             padding: '8px 10px',
-            backgroundColor: '#18181b',
+            backgroundColor: 'var(--bg-card-hover)',
             borderRadius: '6px',
             border: '1px dashed var(--border-bright)',
             marginBottom: '12px',
             fontSize: '0.75rem',
-            color: '#fafafa',
+            color: 'var(--text-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <CheckCircle2 size={13} style={{ color: '#fafafa' }} />
+              <CheckCircle2 size={13} style={{ color: 'var(--text-primary)' }} />
               <span>Spec: {item.encapsulatedSpec.targetEpicLink || 'Encapsulated'}</span>
             </div>
-            <span className="font-mono" style={{ fontSize: '0.7rem', color: '#a1a1aa' }}>
+            <span className="font-mono" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
               {item.encapsulatedSpec.confidenceScore}% Spec Fit
             </span>
           </div>
         ) : (
           <div style={{
             padding: '6px 10px',
-            backgroundColor: '#09090b',
+            backgroundColor: 'var(--text-inverse)',
             borderRadius: '6px',
             border: '1px solid var(--border-subtle)',
             marginBottom: '12px',
             fontSize: '0.72rem',
-            color: '#71717a',
+            color: 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
             gap: '6px'

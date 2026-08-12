@@ -117,13 +117,13 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#121215'
+          backgroundColor: 'var(--bg-card)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               padding: '8px',
-              backgroundColor: '#fafafa',
-              color: '#09090b',
+              backgroundColor: 'var(--text-primary)',
+              color: 'var(--text-inverse)',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -133,14 +133,14 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fafafa' }}>
+                <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Feedback Encapsulation Engine
                 </h2>
                 <span className="badge badge-encapsulated font-mono">
                   {item.code}
                 </span>
               </div>
-              <p style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                 Transforming raw customer feedback into a structured engineering spec & epic requirement.
               </p>
             </div>
@@ -176,51 +176,51 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
         }}>
           {/* Left Column: Raw Feedback Snapshot */}
           <div style={{
-            backgroundColor: '#09090b',
+            backgroundColor: 'var(--text-inverse)',
             borderRight: '1px solid var(--border-medium)',
             padding: '24px',
             overflowY: 'auto'
           }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', marginBottom: '12px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '12px' }}>
               Raw Feedback Snapshot
             </div>
 
             {/* Account Card */}
             <div style={{
               padding: '12px',
-              backgroundColor: '#121215',
+              backgroundColor: 'var(--bg-card)',
               borderRadius: '8px',
               border: '1px solid var(--border-subtle)',
               marginBottom: '16px'
             }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fafafa' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {item.account.name}
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#a1a1aa', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
                 {item.account.tier.replace('_', ' ')} • {item.account.annualRevenue}
               </div>
             </div>
 
             {/* Raw Content Box */}
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 Subject / Title
               </div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#fafafa', lineHeight: 1.3 }}>
+              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                 {item.title}
               </div>
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 Verbatim Customer Message
               </div>
               <div style={{
                 fontSize: '0.8rem',
-                color: '#a1a1aa',
+                color: 'var(--text-secondary)',
                 lineHeight: 1.5,
                 padding: '12px',
-                backgroundColor: '#121215',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '6px',
                 border: '1px solid var(--border-subtle)',
                 fontStyle: 'italic'
@@ -229,7 +229,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
               </div>
             </div>
 
-            <div style={{ fontSize: '0.75rem', color: '#71717a' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               <div>Submitted By: {item.submittedBy}</div>
               <div>Category: {item.category.replace('_', ' ')}</div>
               <div>Priority: {item.priority}</div>
@@ -246,7 +246,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
           }}>
             {/* Title */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                 Encapsulated Feature / Spec Title
               </label>
               <input
@@ -260,7 +260,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
 
             {/* Core Problem Statement */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                 Core Problem Statement (Structured)
               </label>
               <textarea
@@ -274,7 +274,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
 
             {/* Business Impact & Revenue Risk */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                 Quantified Business & Revenue Impact
               </label>
               <textarea
@@ -288,7 +288,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
 
             {/* Technical Scope Points */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                 Technical Requirements & Actionable Scope (Line items)
               </label>
               <textarea
@@ -302,7 +302,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
 
             {/* Acceptance Criteria */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                 Acceptance Criteria & Quality Gates (Line items)
               </label>
               <textarea
@@ -317,7 +317,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
             {/* Grid for Epic Link, Priority & Confidence */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Target Epic / JIRA Link
                 </label>
                 <input
@@ -329,7 +329,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Encapsulated Priority
                 </label>
                 <select
@@ -345,7 +345,7 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Spec Confidence Score (%)
                 </label>
                 <input
@@ -368,8 +368,8 @@ export const EncapsulationModal: React.FC<EncapsulationModalProps> = ({
               paddingTop: '16px',
               marginTop: '8px'
             }}>
-              <div style={{ fontSize: '0.75rem', color: '#71717a' }}>
-                Encapsulating as <strong style={{ color: '#fafafa' }}>{currentUser}</strong>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                Encapsulating as <strong style={{ color: 'var(--text-primary)' }}>{currentUser}</strong>
               </div>
 
               <div style={{ display: 'flex', gap: '12px' }}>

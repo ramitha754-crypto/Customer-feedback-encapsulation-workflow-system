@@ -95,10 +95,10 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
           justifyContent: 'space-between'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fafafa' }}>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               Ingest Customer Feedback
             </h2>
-            <p style={{ fontSize: '0.78rem', color: '#a1a1aa', marginTop: '2px' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
               Record raw user feedback, issue log, or feature request into the encapsulation queue.
             </p>
           </div>
@@ -115,7 +115,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
         <form onSubmit={handleSubmit} style={{ padding: '24px' }}>
           {/* Account Picker */}
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
               Customer Account
             </label>
             <select
@@ -134,7 +134,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
 
           {/* Title */}
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
               Feedback Summary / Headline
             </label>
             <input
@@ -149,7 +149,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
 
           {/* Raw Content */}
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
               Raw Feedback Verbatim Text
             </label>
             <textarea
@@ -165,7 +165,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
           {/* 3 Column Grid for Metadata */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>
                 Category
               </label>
               <select
@@ -183,7 +183,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>
                 Priority Target
               </label>
               <select
@@ -199,7 +199,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '4px', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>
                 Initial Sentiment
               </label>
               <select
@@ -217,7 +217,7 @@ export const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
 
           {/* Tags */}
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa', marginBottom: '6px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
               Tags (Comma separated)
             </label>
             <input

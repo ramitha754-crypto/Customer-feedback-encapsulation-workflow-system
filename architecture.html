@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulseBoard Architecture, ER & Class Diagrams</title>
+  <title>EncaFlow Architecture, ER & Class Diagrams</title>
   
   <!-- Modern Typography (Inter & JetBrains Mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -328,7 +328,7 @@
     <div class="header-content">
       <div class="brand">
         <div class="brand-logo">EF</div>
-        <span>ENCAP<span style="font-weight:300; color:var(--text-secondary);">FLOW</span></span>
+        <span>Enca<span style="font-weight:300; color:var(--text-secondary);">Flow</span></span>
         <span class="badge">ARCH DIAGRAMS v4.2</span>
       </div>
 
@@ -355,7 +355,7 @@
     <!-- SECTION 1: SYSTEM ARCHITECTURE -->
     <div id="panel-arch" class="diagram-panel active">
       <div class="page-title">Enterprise System Architecture</div>
-      <p class="page-subtitle">High-level multi-tier component architecture, security boundaries, and data flow for PulseBoard.</p>
+      <p class="page-subtitle">High-level multi-tier component architecture, security boundaries, and data flow for EncaFlow.</p>
       
       <div class="card">
         <div class="card-header">
@@ -470,86 +470,50 @@ graph TB
           <span class="badge">3NF NORMALIZED SCHEMA</span>
         </div>
         <div class="diagram-viewport">
-          <div class="mermaid">
+         <div class="mermaid">
 %%{init: {'theme': 'dark', 'themeVariables': { 'lineColor': '#a1a1aa', 'primaryColor': '#18181b', 'primaryTextColor': '#fafafa', 'primaryBorderColor': '#3f3f46'}}}%%
 erDiagram
-    CUSTOMER_ACCOUNT ||--o{ FEEDBACK_ITEM : "submits"
-    USER_PERSONA ||--o{ FEEDBACK_ITEM : "manages"
-    FEEDBACK_ITEM ||--o| ENCAPSULATED_SPEC : "encapsulates"
-    FEEDBACK_ITEM ||--o{ AUDIT_LOG : "records"
-    FEEDBACK_ITEM ||--o{ FEEDBACK_COMMENT : "contains"
-    FEEDBACK_ITEM }|--|| CATEGORY : "categorized_by"
+    ACCOUNTS ||--o{ FEEDBACK : "serves"
 
-    CUSTOMER_ACCOUNT {
-        string id PK
-        string name
-        string tier
-        string annual_revenue
-        int sla_tier_hours
+    ACCOUNTS {
+        varchar(50) id PK
+        varchar(255) name
+        varchar(50) tier
+        varchar(100) annualRevenue
+        varchar(10) logoInitial
+        int slaTierHours
     }
 
-    USER_PERSONA {
-        string id PK
-        string name
-        string role
-        string email
-        string permissions
+    USERS {
+        varchar(50) id PK
+        varchar(100) username
+        varchar(255) password_hash
+        varchar(100) name
+        varchar(50) role
+        varchar(100) title
+        varchar(50) avatar
+        varchar(100) email
+        json permissions
     }
 
-    FEEDBACK_ITEM {
-        string id PK
-        string code
-        string title
-        text raw_content
-        string priority
-        string stage
-        string sentiment
-        string account_id FK
-        string category_id FK
-        datetime submitted_at
-        datetime sla_deadline
-        boolean is_sla_breached
-    }
-
-    ENCAPSULATED_SPEC {
-        string id PK
-        string feedback_id FK
-        string title
-        text core_problem
-        text business_impact
-        string technical_scope
-        string acceptance_criteria
-        string suggested_priority
-        string target_epic_link
-        string encapsulated_by
-        datetime encapsulated_at
-        int confidence_score
-    }
-
-    AUDIT_LOG {
-        string id PK
-        string feedback_id FK
-        datetime timestamp
-        string actor
-        string actor_role
-        string action
-        text details
-    }
-
-    FEEDBACK_COMMENT {
-        string id PK
-        string feedback_id FK
-        string author
-        string role
-        datetime timestamp
-        text message
-    }
-
-    CATEGORY {
-        string id PK
-        string code
-        string name
-        string description
+    FEEDBACK {
+        varchar(50) id PK
+        varchar(50) code
+        varchar(255) title
+        text rawContent
+        varchar(50) category
+        varchar(50) priority
+        varchar(50) stage
+        varchar(50) accountId FK
+        varchar(50) sentiment
+        varchar(255) submittedBy
+        datetime submittedAt
+        datetime slaDeadline
+        boolean isSlaBreached
+        json tags
+        json encapsulatedSpec
+        json auditTrail
+        json comments
     }
           </div>
         </div>
@@ -671,46 +635,88 @@ classDiagram
             </thead>
             <tbody>
               <tr>
-                <td><span class="code-tag">FeedbackItem</span></td>
+                <td><span class="code-tag">users</span></td>
                 <td><span class="code-tag">id</span></td>
-                <td>VARCHAR(36)</td>
-                <td>PRIMARY KEY, UUID</td>
-                <td>Unique feedback entry identifier</td>
+                <td>VARCHAR(50)</td>
+                <td>PRIMARY KEY</td>
+                <td>Unique user identifier</td>
               </tr>
               <tr>
-                <td><span class="code-tag">FeedbackItem</span></td>
-                <td><span class="code-tag">code</span></td>
-                <td>VARCHAR(16)</td>
-                <td>UNIQUE, INDEX</td>
-                <td>Human-readable ticket code (e.g. FB-8901)</td>
+                <td><span class="code-tag">users</span></td>
+                <td><span class="code-tag">username</span></td>
+                <td>VARCHAR(100)</td>
+                <td>UNIQUE, NOT NULL</td>
+                <td>Application login name</td>
               </tr>
               <tr>
-                <td><span class="code-tag">FeedbackItem</span></td>
-                <td><span class="code-tag">stage</span></td>
-                <td>ENUM</td>
+                <td><span class="code-tag">users</span></td>
+                <td><span class="code-tag">password_hash</span></td>
+                <td>VARCHAR(255)</td>
                 <td>NOT NULL</td>
-                <td>inbox, triaged, encapsulated, backlog, in_progress, resolved</td>
+                <td>Bcrypt hash for secure authentication</td>
               </tr>
               <tr>
-                <td><span class="code-tag">CustomerAccount</span></td>
-                <td><span class="code-tag">tier</span></td>
-                <td>ENUM</td>
+                <td><span class="code-tag">users</span></td>
+                <td><span class="code-tag">role</span></td>
+                <td>VARCHAR(50)</td>
                 <td>NOT NULL</td>
-                <td>ENTERPRISE_VIP (4h SLA), ENTERPRISE (12h), MID_MARKET (24h), SMB (48h)</td>
+                <td>Role such as ENTERPRISE_ADMIN or SUPPORT_SPECIALIST</td>
               </tr>
               <tr>
-                <td><span class="code-tag">EncapsulatedSpec</span></td>
-                <td><span class="code-tag">confidence_score</span></td>
+                <td><span class="code-tag">accounts</span></td>
+                <td><span class="code-tag">annualRevenue</span></td>
+                <td>VARCHAR(100)</td>
+                <td>NULL</td>
+                <td>Annual recurring revenue string for customer account</td>
+              </tr>
+              <tr>
+                <td><span class="code-tag">accounts</span></td>
+                <td><span class="code-tag">slaTierHours</span></td>
                 <td>INT</td>
-                <td>CHECK (0-100)</td>
-                <td>Fit confidence percentage of generated technical specification</td>
+                <td>NULL</td>
+                <td>Service-level agreement hours by account tier</td>
               </tr>
               <tr>
-                <td><span class="code-tag">AuditLog</span></td>
-                <td><span class="code-tag">action</span></td>
-                <td>VARCHAR(64)</td>
-                <td>NOT NULL</td>
-                <td>Immutable audit action (e.g. STAGE_CHANGED, ENCAPSULATED)</td>
+                <td><span class="code-tag">feedback</span></td>
+                <td><span class="code-tag">stage</span></td>
+                <td>VARCHAR(50)</td>
+                <td>NULL</td>
+                <td>Workflow stage, e.g. triaged, encapsulated, backlog, in_progress, resolved</td>
+              </tr>
+              <tr>
+                <td><span class="code-tag">feedback</span></td>
+                <td><span class="code-tag">accountId</span></td>
+                <td>VARCHAR(50)</td>
+                <td>FOREIGN KEY</td>
+                <td>References the owning account record in accounts(id)</td>
+              </tr>
+              <tr>
+                <td><span class="code-tag">feedback</span></td>
+                <td><span class="code-tag">tags</span></td>
+                <td>JSON</td>
+                <td>NULL</td>
+                <td>Custom tags for classification and search</td>
+              </tr>
+              <tr>
+                <td><span class="code-tag">feedback</span></td>
+                <td><span class="code-tag">encapsulatedSpec</span></td>
+                <td>JSON</td>
+                <td>NULL</td>
+                <td>Structured technical spec generated for the feedback item</td>
+              </tr>
+              <tr>
+                <td><span class="code-tag">feedback</span></td>
+                <td><span class="code-tag">auditTrail</span></td>
+                <td>JSON</td>
+                <td>NULL</td>
+                <td>Immutable action log of transitions and comments</td>
+              </tr>
+              <tr>
+                <td><span class="code-tag">feedback</span></td>
+                <td><span class="code-tag">comments</span></td>
+                <td>JSON</td>
+                <td>NULL</td>
+                <td>Customer or team discussion entries</td>
               </tr>
             </tbody>
           </table>
@@ -722,7 +728,7 @@ classDiagram
 
   <!-- Footer -->
   <footer>
-    PulseBoard Enterprise Architecture Documentation &bull; Generated for Development & Compliance Review
+    EncaFlow Enterprise Architecture Documentation &bull; Generated for Development & Compliance Review
   </footer>
 
   <!-- Initialization & Tab Switcher Script -->

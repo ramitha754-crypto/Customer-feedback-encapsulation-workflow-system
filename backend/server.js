@@ -21,7 +21,11 @@ app.use(cookieParser());
 // Simple in-memory refresh token store (dev). For production use DB or Redis to persist and revoke.
 const refreshStore = new Map(); // jti -> userId
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret_in_production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set. Generate a strong secret and set JWT_SECRET in the environment.');
+  process.exit(1);
+}
 const ACCESS_TOKEN_TTL = process.env.ACCESS_TOKEN_TTL || '15m';
 const REFRESH_TOKEN_TTL = process.env.REFRESH_TOKEN_TTL || '7d';
 

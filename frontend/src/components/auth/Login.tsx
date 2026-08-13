@@ -151,7 +151,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                placeholder="e.g. admin"
+                placeholder=""
               />
             </div>
 
@@ -167,7 +167,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="••••••••"
+                placeholder=""
               />
             </div>
 
@@ -187,20 +187,6 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
           </form>
         </div>
 
-        {/* Footer Security Badges */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '16px',
-          marginTop: '24px',
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)'
-        }}>
-          <span>SOC2 Type II Certified</span>
-          <span>•</span>
-          <span>ISO 27001 Encrypted</span>
-        </div>
       </div>
     </div>
   );

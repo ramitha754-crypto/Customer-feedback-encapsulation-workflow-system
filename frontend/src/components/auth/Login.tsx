@@ -108,10 +108,10 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
             <Layers size={26} />
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
-            ENCAP<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>FLOW</span>
+            Pulse<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>Board</span>
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '6px' }}>
-            Enterprise Customer Feedback & Encapsulation System
+            Enterprise Customer Feedback & Spec Workflow
           </p>
         </div>
 

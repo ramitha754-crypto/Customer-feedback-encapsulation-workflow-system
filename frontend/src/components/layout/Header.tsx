@@ -8,7 +8,7 @@ import {
   Plus, 
   Sun,
   Moon,
-  Lock
+ LogOut
 } from 'lucide-react';
 import type { UserPersona } from '../../types/feedback';
 import { mockPersonas } from '../../data/mockData';
@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div 
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }}
             onClick={() => setCurrentTab('feedback')}
-            title="EncapFlow Home"
+            title="PulseBoard Home"
           >
             <div style={{
               width: '34px',
@@ -71,15 +71,15 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
                 <span style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-                  ENCAP<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>FLOW</span>
+                  Pulse<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>Board</span>
                 </span>
                 <span className="badge" style={{ backgroundColor: 'var(--bg-card-active)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)', padding: '1px 6px', fontSize: '0.65rem' }}>
-                  ENT v4.2
+                  PB v4.2
                 </span>
               </div>
               <div className="header-brand-subtitle">
                 <span className="pulse-dot" style={{ marginRight: 6 }}></span>
-                <span>Feedback Encapsulation Engine</span>
+                <span>Feedback & Spec Workflow</span>
               </div>
             </div>
           </div>
@@ -178,10 +178,10 @@ export const Header: React.FC<HeaderProps> = ({
           <button 
             className="btn btn-ghost" 
             onClick={onLogout}
-            title="Lock Session & Return to Login Screen"
+          title="Logout and return to Login"
             style={{ width: '34px', height: '34px', padding: 0, color: 'var(--text-muted)', flexShrink: 0 }}
           >
-            <Lock size={15} />
+          <LogOut size={15} />
           </button>
         </div>
       </div>

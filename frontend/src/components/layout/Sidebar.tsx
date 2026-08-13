@@ -61,7 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           marginBottom: '32px'
         }}
         onClick={() => setCurrentTab('feedback')}
-        title="EncapFlow Home"
+        title="PulseBoard Home"
       >
         <div style={{
           width: '38px',
@@ -81,12 +81,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
             <span style={{ fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-              ENCAP<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>FLOW</span>
+              Pulse<span style={{ fontWeight: 300, color: 'var(--text-secondary)' }}>Board</span>
             </span>
           </div>
           <div className="header-brand-subtitle" style={{ fontSize: '0.65rem' }}>
             <span className="pulse-dot" style={{ marginRight: 6 }}></span>
-            <span>Feedback Engine v4.2</span>
+            <span>PulseBoard v4.2</span>
           </div>
         </div>
       </div>

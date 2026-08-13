@@ -1,8 +1,8 @@
-# EncapFlow — Enterprise Customer Feedback & Encapsulation System
+# PulseBoard — Enterprise Customer Feedback & Spec Workflow
 ## Executive Demo Guide & Walkthrough Script
 
 > [!NOTE]
-> **EncapFlow** is an enterprise-grade customer feedback encapsulation platform designed for Product Management, Customer Engineering, and Support teams. It bridges the gap between unstructured high-value enterprise customer feedback and structured, developer-ready technical specifications.
+> **PulseBoard** is an enterprise-grade customer feedback and spec workflow platform designed for Product Management, Customer Engineering, and Support teams. It bridges the gap between unstructured high-value enterprise customer feedback and structured, developer-ready technical specifications.
 
 ---
 
@@ -21,7 +21,7 @@ flowchart LR
 
 ## 🎭 Demo Personas & Roles
 
-EncapFlow includes pre-configured demo personas to demonstrate role-based access control (RBAC) and team workflows:
+PulseBoard includes pre-configured demo personas to demonstrate role-based access control (RBAC) and team workflows:
 
 | Persona | Role | Key Capabilities | Best Demo Use Case |
 | :--- | :--- | :--- | :--- |
@@ -132,3 +132,82 @@ To perform a complete live end-to-end demonstration during a presentation:
 - **Styling**: Monochromatic CSS token design system with dark/light mode switching (`data-theme="dark|light"`).
 - **Layout Architecture**: Flexbox layout with strict `flex-shrink: 0` bounds and hidden overflow navigation to ensure zero UI collisions across viewports.
 - **Type Safety**: Strictly typed domain model (`FeedbackItem`, `EncapsulatedSpec`, `UserPersona`, `AuditLog`).
+
+---
+
+## 🔐 Recent Security, Auth & RBAC changes (implemented)
+
+This release includes several security and access-control improvements. Use this section for demo talking points and operational commands.
+
+1. Password policy (user creation/update only)
+   - Enforced rule: mixed-case letters + at least one special character + minimum 16 characters.
+   - Regex (backend): /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{16,}$/
+   - The login endpoint intentionally returns a generic error message: "Please check your username and password" (no policy details exposed).
+
+2. Secure session handling
+   - Cookies: httpOnly access_token (short TTL) and refresh_token (longer TTL) set by the server.
+   - Endpoints:
+     - POST /api/auth/login — sets cookies and returns profile
+     - POST /api/auth/refresh — issues new access_token and returns profile
+     - POST /api/auth/logout — revokes refresh token and clears cookies
+   - Frontend uses fetch(..., { credentials: 'include' }) and restores session on App mount by calling /api/auth/refresh.
+
+3. No hard-coded admin password in repo
+   - DEFAULT_ADMIN_PASSWORD removed from committed files and code no longer contains a fallback secret.
+   - Automated seeding/reset only runs when DEFAULT_ADMIN_PASSWORD is explicitly provided in the environment (not recommended for prod).
+   - Admin helper added: [backend/setAdminPassword.mjs](C:/Users/ramit/OneDrive/Desktop/proj1/Customer-feedback-encapsulation-workflow-system/backend/setAdminPassword.mjs)
+     - Interactive mode: node backend\\setAdminPassword.mjs (prompts to enter & confirm password)
+     - Random generation: node backend\\setAdminPassword.mjs --random (prints password once)
+   - Admin password checker updated: [backend/checkAdminPassword.mjs](C:/Users/ramit/OneDrive/Desktop/proj1/Customer-feedback-encapsulation-workflow-system/backend/checkAdminPassword.mjs)
+     - Now requires PASSWORD_TO_TEST env var; no fallback password.
+
+4. RBAC enforcement
+   - Backend enforces permission checks via middleware (see [backend/server.js](C:/Users/ramit/OneDrive/Desktop/proj1/Customer-feedback-encapsulation-workflow-system/backend/server.js)).
+   - Permissions stored per-user as JSON (users.permissions) and include `FULL_ADMIN_ACCESS` for admin.
+   - Frontend gating via [frontend/src/utils/permissions.ts](C:/Users/ramit/OneDrive/Desktop/proj1/Customer-feedback-encapsulation-workflow-system/frontend/src/utils/permissions.ts).
+
+5. CORS and environment variables
+   - Backend reads FRONTEND_ORIGIN from environment (added to backend/.env for development): FRONTEND_ORIGIN=http://localhost:5173
+   - For production, also set JWT_SECRET and enable Secure cookies + trust proxy settings.
+
+6. UI updates (visible during demo)
+   - Left "New Feedback" action removed from the Sidebar; top-right "Ingest New Feedback" remains.
+   - Bottom lock control replaced with a Logout action (icon + "Logout" text) that calls the logout endpoint and returns to login.
+   - Light-mode near-black colors changed to slate grey (#374151) via [frontend/src/index.css](C:/Users/ramit/OneDrive/Desktop/proj1/Customer-feedback-encapsulation-workflow-system/frontend/src/index.css).
+
+---
+
+## ▶️ How to run (developer / demo)
+
+1. Ensure required environment variables (local dev):
+   - FRONTEND_ORIGIN=http://localhost:5173
+   - DB connection vars: DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+   - (Optional) DEFAULT_ADMIN_PASSWORD only if you intentionally want automated seeding (not recommended)
+   - For production: set JWT_SECRET and configure Secure cookies + trusted proxy.
+
+2. Create or reset admin securely (recommended):
+   - Interactive:
+     node backend\\setAdminPassword.mjs
+   - Generate a strong random admin password and show it once:
+     node backend\\setAdminPassword.mjs --random
+
+3. Start backend and frontend (Windows examples):
+   - CMD (open two new command windows):
+     start "Backend" cmd /k "cd backend && npm run dev" & start "Frontend" cmd /k "cd frontend && npm run dev"
+   - PowerShell (open two new PowerShell windows):
+     Start-Process -FilePath 'powershell' -ArgumentList '-NoExit','-Command','cd backend; npm run dev'; Start-Process -FilePath 'powershell' -ArgumentList '-NoExit','-Command','cd frontend; npm run dev'
+
+4. Demo flow:
+   - Open the frontend at http://localhost:5173
+   - Login with admin (created in step 2)
+   - Refresh the page — session is preserved via httpOnly cookies and the refresh endpoint (no tokens in localStorage).
+   - Use User Management to create/update users (password policy enforced on create/update only) and assign roles/permissions.
+
+---
+
+## ✅ Notes & Recommendations
+- Replace in-memory refresh token store with Redis or DB for production to support revocation across instances.
+- Never commit passwords to source control. Use a secret manager or secure CI pipeline to set DB seeds if needed.
+- Consider adding a small `backend/.env.example` (without secrets) to document required env vars.
+
+If you'd like, I can append a short section showing example SQL to create a manual admin user, or add a `backend/README.md` with the same run steps.

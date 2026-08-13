@@ -376,11 +376,11 @@ graph TB
 
     subgraph Security_Gate["Identity Security Gateway"]
         SSO_Gate["SAML 2.0 Azure AD Okta SSO"]
-        Auth_Filter["Spring Security JWT Filter"]
+        Auth_Filter["Express JWT / Cookie Auth Middleware"]
         Rate_Limiter["Redis Rate Limiter"]
     end
 
-    subgraph Backend_Services["Application Tier Spring Boot"]
+    subgraph Backend_Services["Application Tier (Node / Express)"]
         Ingestion_Svc["FeedbackIngestionService"]
         Encapsulation_Svc["EncapsulationEngineService"]
         Workflow_Svc["WorkflowPipelineService"]
@@ -428,12 +428,33 @@ graph TB
 
       <div class="grid-2">
         <div class="spec-box">
-          <h4>🔐 Security & Access Control Boundary</h4>
-          <p>Federated SAML 2.0 / OIDC Authentication with granular Role-Based Access Control (RBAC). Enforces bitmask permission checks across all API controller endpoints.</p>
+          <h4>🔐 Security & Access Control Boundary (Updated)</h4>
+          <p>Federated SAML / OIDC can be used for identity federation, but application sessions now use secure httpOnly JWT cookies instead of exposing tokens to JavaScript. Backend enforces Role-Based Access Control (RBAC) on every protected route via middleware. UI gating is performed in the frontend but backend checks remain authoritative.</p>
+          <ul>
+            <li>Access token: short-lived JWT stored as <code>httpOnly</code> cookie <code>access_token</code>.</li>
+            <li>Refresh token: longer-lived JWT stored as <code>httpOnly</code> cookie <code>refresh_token</code>; server keeps a revocation identifier (JTI) in an in-memory store for development.</li>
+            <li>Endpoints: <code>POST /api/auth/login</code>, <code>POST /api/auth/refresh</code>, <code>POST /api/auth/logout</code>.</li>
+          </ul>
         </div>
+
         <div class="spec-box">
-          <h4>⚡ Real-time SLA Engine & Audit Logging</h4>
-          <p>Automated tier-based SLA calculation (4h to 48h) with background Redis timers. Every stage transition logs an immutable audit entry with actor metadata.</p>
+          <h4>🛠️ Admin Provisioning & Secrets</h4>
+          <p>Default/hard-coded admin passwords were removed from the repository. Automated seeding/reset will only run if <code>DEFAULT_ADMIN_PASSWORD</code> is explicitly supplied in the environment (not recommended for production).</p>
+          <p>Use the interactive helper <code>backend/setAdminPassword.mjs</code> to create or reset the admin securely (prompts, or <code>--random</code> to generate and print once).</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px;">
+        <div class="spec-box">
+          <h4>🌐 CORS, Cookies & Environment</h4>
+          <p>Backend sets CORS to only allow the configured frontend origin and permits credentials:</p>
+          <pre>app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }))</pre>
+          <p>Development <code>backend/.env</code> contains <code>FRONTEND_ORIGIN=http://localhost:5173</code>. For production, also set <code>JWT_SECRET</code> and enable <code>Secure</code> cookie flags with <code>app.set('trust proxy', 1)</code> as appropriate.</p>
+        </div>
+
+        <div class="spec-box">
+          <h4>🎨 UI changes & Theming</h4>
+          <p>Recent UI updates include removal of the left "New Feedback" action, replacement of the bottom lock control with a Logout button (icon + text), and light-mode text colors adjusted to slate-grey (#374151) to replace pure-black elements. See <code>frontend/src/index.css</code>.</p>
         </div>
       </div>
     </div>

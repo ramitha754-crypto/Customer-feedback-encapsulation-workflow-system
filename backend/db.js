@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'EncaFlowSecure!2026';
+const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD;
 const RESET_ADMIN_PASSWORD = process.env.RESET_ADMIN_PASSWORD === 'true';
 
 async function hashPassword(password) {
@@ -237,44 +237,52 @@ export async function setupDatabase() {
     // Seed users
     const [userRows] = await currentPool.query('SELECT COUNT(*) as count FROM users');
     if (userRows[0].count === 0) {
-      console.log("Seeding users...");
-      const hash = await hashPassword(DEFAULT_ADMIN_PASSWORD);
-      const mockUsers = [
-        { id: 'usr-1', username: 'admin', name: 'Elena Rostova', role: 'ENTERPRISE_ADMIN', title: 'Principal Product Manager', avatar: 'ER', email: 'elena.rostova@enterprise.internal', permissions: adminPermissions },
-        { id: 'usr-2', username: 'alex', name: 'Marcus Vance', role: 'SUPPORT_SPECIALIST', title: 'Senior Enterprise Support Lead', avatar: 'MV', email: 'marcus.v@enterprise.internal', permissions: JSON.stringify(['CREATE_FEEDBACK', 'COMMENT_FEEDBACK']) },
-        { id: 'usr-3', username: 'sarah', name: 'Sarah Jenkins', role: 'ENGINEERING_LEAD', title: 'Staff Software Engineer', avatar: 'SJ', email: 's.jenkins@enterprise.internal', permissions: JSON.stringify(['VIEW_ENCAPSULATIONS', 'COMMENT_FEEDBACK', 'ASSIGN_EPIC']) }
-      ];
-      for (const user of mockUsers) {
-        await currentPool.query(`
-          INSERT INTO users (id, username, password_hash, name, role, title, avatar, email, permissions)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [user.id, user.username, hash, user.name, user.role, user.title, user.avatar, user.email, user.permissions]);
+      if (!DEFAULT_ADMIN_PASSWORD) {
+        console.warn('DEFAULT_ADMIN_PASSWORD is not set; skipping automatic seeding of user accounts. Please create an admin user manually or set DEFAULT_ADMIN_PASSWORD in your environment for automated seeding (not recommended for production).');
+      } else {
+        console.log("Seeding users...");
+        const hash = await hashPassword(DEFAULT_ADMIN_PASSWORD);
+        const mockUsers = [
+          { id: 'usr-1', username: 'admin', name: 'Elena Rostova', role: 'ENTERPRISE_ADMIN', title: 'Principal Product Manager', avatar: 'ER', email: 'elena.rostova@enterprise.internal', permissions: adminPermissions },
+          { id: 'usr-2', username: 'alex', name: 'Marcus Vance', role: 'SUPPORT_SPECIALIST', title: 'Senior Enterprise Support Lead', avatar: 'MV', email: 'marcus.v@enterprise.internal', permissions: JSON.stringify(['CREATE_FEEDBACK', 'COMMENT_FEEDBACK']) },
+          { id: 'usr-3', username: 'sarah', name: 'Sarah Jenkins', role: 'ENGINEERING_LEAD', title: 'Staff Software Engineer', avatar: 'SJ', email: 's.jenkins@enterprise.internal', permissions: JSON.stringify(['VIEW_ENCAPSULATIONS', 'COMMENT_FEEDBACK', 'ASSIGN_EPIC']) }
+        ];
+        for (const user of mockUsers) {
+          await currentPool.query(`
+            INSERT INTO users (id, username, password_hash, name, role, title, avatar, email, permissions)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `, [user.id, user.username, hash, user.name, user.role, user.title, user.avatar, user.email, user.permissions]);
+        }
       }
     }
 
     if (RESET_ADMIN_PASSWORD) {
-      const [adminRows] = await currentPool.query('SELECT id, password_hash FROM users WHERE username = ?', ['admin']);
-      if (adminRows.length === 0) {
-        const adminHash = await hashPassword(DEFAULT_ADMIN_PASSWORD);
-        await currentPool.query(`
-          INSERT INTO users (id, username, password_hash, name, role, title, avatar, email, permissions)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, ['usr-1', 'admin', adminHash, 'Elena Rostova', 'ENTERPRISE_ADMIN', 'Principal Product Manager', 'ER', 'elena.rostova@enterprise.internal', adminPermissions]);
-        console.log('Admin account created with default credentials.');
+      if (!DEFAULT_ADMIN_PASSWORD) {
+        console.warn('RESET_ADMIN_PASSWORD=true but DEFAULT_ADMIN_PASSWORD is not set; skipping admin password reset/creation to avoid introducing a default credential.');
       } else {
-        const adminId = adminRows[0].id;
-        const adminHash = adminRows[0].password_hash;
-        const matches = await bcrypt.compare(DEFAULT_ADMIN_PASSWORD, adminHash);
-        if (!matches) {
-          const newHash = await hashPassword(DEFAULT_ADMIN_PASSWORD);
-          await currentPool.query('UPDATE users SET password_hash = ? WHERE username = ?', [newHash, 'admin']);
-          console.log('Admin password reset to default credentials.');
+        const [adminRows] = await currentPool.query('SELECT id, password_hash FROM users WHERE username = ?', ['admin']);
+        if (adminRows.length === 0) {
+          const adminHash = await hashPassword(DEFAULT_ADMIN_PASSWORD);
+          await currentPool.query(`
+            INSERT INTO users (id, username, password_hash, name, role, title, avatar, email, permissions)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `, ['usr-1', 'admin', adminHash, 'Elena Rostova', 'ENTERPRISE_ADMIN', 'Principal Product Manager', 'ER', 'elena.rostova@enterprise.internal', adminPermissions]);
+          console.log('Admin account created with default credentials.');
+        } else {
+          const adminId = adminRows[0].id;
+          const adminHash = adminRows[0].password_hash;
+          const matches = await bcrypt.compare(DEFAULT_ADMIN_PASSWORD, adminHash);
+          if (!matches) {
+            const newHash = await hashPassword(DEFAULT_ADMIN_PASSWORD);
+            await currentPool.query('UPDATE users SET password_hash = ? WHERE username = ?', [newHash, 'admin']);
+            console.log('Admin password reset to default credentials.');
+          }
+          await currentPool.query(
+            'UPDATE users SET role = ?, permissions = ? WHERE id = ?',
+            ['ENTERPRISE_ADMIN', adminPermissions, adminId]
+          );
+          console.log('Admin role and permissions updated to full access.');
         }
-        await currentPool.query(
-          'UPDATE users SET role = ?, permissions = ? WHERE id = ?',
-          ['ENTERPRISE_ADMIN', adminPermissions, adminId]
-        );
-        console.log('Admin role and permissions updated to full access.');
       }
     }
 

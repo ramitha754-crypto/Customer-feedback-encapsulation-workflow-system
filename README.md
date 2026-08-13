@@ -9,21 +9,15 @@ Prerequisites: Node.js (v16+ recommended) and npm installed.
 ```bash
 cd frontend
 npm install
+cd ../backend
+npm install
 ```
 
 2. Start development server
-
+in powershell
 ```bash
-npm run dev
-```
+Start-Process cmd -ArgumentList '/k','cd /d backend && npm run dev' ; Start-Process cmd -ArgumentList '/k','cd /d frontend && npm run dev'
+```bash
 
 The app will be available at http://localhost:5173 by default.
 
-3. Build and preview production bundle
-
-```bash
-npm run build
-npm run preview
-```
-
-Available scripts (in frontend/package.json): `dev`, `build`, `preview`, `lint`.

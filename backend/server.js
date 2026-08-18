@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { setupDatabase, getDbPool } from './db.js';
+import { setupDatabase, getDbPool, insertAuditLog } from './db.js';
 
 dotenv.config();
 
@@ -162,6 +162,9 @@ app.post('/api/auth/login', async (req, res) => {
     res.cookie('access_token', accessToken, { httpOnly: true, secure: secureFlag, sameSite: 'lax', maxAge: 15 * 60 * 1000 });
     res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: secureFlag, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
 
+    // Audit log for login
+    await insertAuditLog(pool, sessionUser.id, sessionUser.name, sessionUser.role, 'LOGIN', `User '${sessionUser.username}' logged in successfully.`);
+
     // Return user profile only (do not expose tokens to JS)
     res.json(sessionUser);
   } catch (error) {
@@ -220,18 +223,34 @@ app.post('/api/auth/refresh', async (req, res) => {
   }
 });
 
-app.post('/api/auth/logout', (req, res) => {
+app.post('/api/auth/logout', async (req, res) => {
   try {
     const refreshToken = req.cookies?.refresh_token;
+    let loggedOutUser = null;
     if (refreshToken) {
       try {
         const decoded = jwt.verify(refreshToken, JWT_SECRET);
-        if (decoded && decoded.jti) refreshStore.delete(decoded.jti);
+        if (decoded && decoded.jti) {
+          loggedOutUser = decoded;
+          refreshStore.delete(decoded.jti);
+        }
       } catch (e) {}
     }
     // Clear cookies
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
+
+    // Audit log for logout
+    if (loggedOutUser) {
+      const pool = await getDbPool();
+      // Load user details for audit entry
+      const [rows] = await pool.query('SELECT id, username, name, role FROM users WHERE id = ?', [loggedOutUser.sub]);
+      if (rows.length > 0) {
+        const u = rows[0];
+        await insertAuditLog(pool, u.id, u.name, u.role, 'LOGOUT', `User '${u.username}' logged out.`);
+      }
+    }
+
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Internal server error' });
@@ -331,6 +350,9 @@ app.put('/api/users/:id', authMiddleware, requirePermission('MANAGE_USERS'), asy
       ...updatedUser,
       permissions: parsedPermissions,
     });
+
+    // Audit log for user update
+    await insertAuditLog(pool, req.user.id, req.user.name, req.user.role, 'UPDATE_USER', `User '${updatedUser.username}' (ID: ${id}) updated by '${req.user.name}'. Role set to '${role}'.`);
   } catch (error) {
     console.error('Update user error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -436,7 +458,10 @@ app.post('/api/feedback', authMiddleware, requirePermission('CREATE_FEEDBACK'), 
       fb.account.id, fb.sentiment, fb.submittedBy, new Date(fb.submittedAt), new Date(fb.slaDeadline), 
       fb.isSlaBreached, tags, encapsulatedSpec, auditTrail, comments
     ]);
-    
+
+    // Audit log for new feedback
+    await insertAuditLog(pool, req.user.id, req.user.name, req.user.role, 'CREATE_FEEDBACK', `Feedback item '${fb.title}' (${fb.code}) created by '${req.user.name}'.`);
+
     res.status(201).json({ success: true });
   } catch (error) {
     console.error('Create feedback error:', error);
@@ -499,10 +524,112 @@ app.put('/api/feedback/:id', authMiddleware, async (req, res) => {
     `, [
       fb.stage, fb.priority, tags, encapsulatedSpec, auditTrail, comments, id
     ]);
-    
+
+    // Audit log for feedback update
+    const changeDetails = [];
+    if (fb.stage && fb.stage !== existingItem.stage) {
+      changeDetails.push(`stage → '${fb.stage}'`);
+      // Dedicated stage-change audit log
+      await insertAuditLog(pool, req.user.id, req.user.name, req.user.role, 'STAGE_CHANGED', `Feedback '${id}' transitioned from '${existingItem.stage}' to '${fb.stage}' by '${req.user.name}'.`);
+    }
+    if (fb.encapsulatedSpec) {
+      changeDetails.push('encapsulated spec updated');
+      // Dedicated encapsulation audit log
+      await insertAuditLog(pool, req.user.id, req.user.name, req.user.role, 'ENCAPSULATED', `Feedback '${id}' encapsulated into technical specification by '${req.user.name}'.`);
+    }
+    // Only log generic UPDATE_FEEDBACK when no specific sub-event was logged
+    if (changeDetails.length === 0) {
+      await insertAuditLog(pool, req.user.id, req.user.name, req.user.role, 'UPDATE_FEEDBACK', `Feedback '${id}' updated by '${req.user.name}'.`);
+    }
+
     res.json({ success: true });
   } catch (error) {
     console.error('Update feedback error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// ── Create User endpoint ──────────────────────────────────────────────────
+app.post('/api/users', authMiddleware, requirePermission('MANAGE_USERS'), async (req, res) => {
+  const { username, name, role, title, avatar, email, permissions, password } = req.body;
+
+  if (!username || !name || !role || !password) {
+    return res.status(400).json({ error: 'username, name, role and password are required' });
+  }
+
+  if (!isPasswordStrong(password)) {
+    return res.status(400).json({ error: passwordPolicyError });
+  }
+
+  try {
+    const pool = await getDbPool();
+
+    // Check username uniqueness
+    const [existing] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
+    if (existing.length > 0) {
+      return res.status(409).json({ error: `Username '${username}' is already taken` });
+    }
+
+    const id = `usr-${Date.now()}`;
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+    const permsJson = JSON.stringify(Array.isArray(permissions) ? permissions : []);
+
+    await pool.query(
+      'INSERT INTO users (id, username, password_hash, name, role, title, avatar, email, permissions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [id, username, passwordHash, name, role, title || null, avatar || null, email || null, permsJson]
+    );
+
+    await insertAuditLog(pool, req.user.id, req.user.name, req.user.role, 'CREATE_USER', `New user '${username}' (${name}) created by '${req.user.name}'. Role: '${role}'.`);
+
+    const [rows] = await pool.query('SELECT id, username, name, role, title, avatar, email, permissions FROM users WHERE id = ?', [id]);
+    const created = rows[0];
+    let parsedPermissions = [];
+    try {
+      parsedPermissions = typeof created.permissions === 'string' ? JSON.parse(created.permissions) : (created.permissions ?? []);
+    } catch (e) {}
+
+    res.status(201).json({ ...created, permissions: parsedPermissions });
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ── System Audit Log endpoint ──────────────────────────────────────────────
+app.get('/api/audit-logs', authMiddleware, requirePermission('VIEW_AUDIT_LOGS'), async (req, res) => {
+  try {
+    const pool = await getDbPool();
+    const limit = Math.min(parseInt(req.query.limit || '200', 10), 500);
+    const offset = parseInt(req.query.offset || '0', 10);
+    const search = req.query.search ? `%${req.query.search}%` : null;
+
+    let query = 'SELECT * FROM system_audit_logs';
+    const params = [];
+
+    if (search) {
+      query += ' WHERE (actorName LIKE ? OR action LIKE ? OR details LIKE ?)';
+      params.push(search, search, search);
+    }
+
+    query += ' ORDER BY timestamp DESC LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+
+    const [rows] = await pool.query(query, params);
+
+    // Total count
+    let countQuery = 'SELECT COUNT(*) as total FROM system_audit_logs';
+    const countParams = [];
+    if (search) {
+      countQuery += ' WHERE (actorName LIKE ? OR action LIKE ? OR details LIKE ?)';
+      countParams.push(search, search, search);
+    }
+    const [[{ total }]] = await pool.query(countQuery, countParams);
+
+    res.json({ logs: rows, total });
+  } catch (error) {
+    console.error('Fetch audit logs error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

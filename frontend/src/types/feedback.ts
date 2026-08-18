@@ -75,7 +75,17 @@ export interface FeedbackItem {
   tags: string[];
 }
 
-export type Role = 'SUPPORT_SPECIALIST' | 'PRODUCT_MANAGER' | 'ENTERPRISE_ADMIN' | 'CUSTOMER_REP';
+export type Role = 'SUPPORT_SPECIALIST' | 'PRODUCT_MANAGER' | 'ENTERPRISE_ADMIN' | 'CUSTOMER_REP' | 'ENGINEERING_LEAD';
+
+export interface SystemAuditLog {
+  id: string;
+  timestamp: string;
+  actorId: string | null;
+  actorName: string | null;
+  actorRole: string | null;
+  action: string;
+  details: string | null;
+}
 
 export interface UserPersona {
   id: string;

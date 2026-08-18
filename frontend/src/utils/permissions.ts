@@ -30,6 +30,10 @@ export const availableDashboardTabs = (user: UserPersona | null): string[] => {
     tabs.push('users');
   }
 
+  if (hasAnyPermission(user, ['VIEW_AUDIT_LOGS', 'FULL_ADMIN_ACCESS'])) {
+    tabs.push('audit');
+  }
+
   return tabs;
 };
 

@@ -10,6 +10,7 @@ import { KanbanBoard } from './components/workflow/KanbanBoard';
 import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
 import { FeedbackDetailsDrawer } from './components/feedback/FeedbackDetailsDrawer';
 import { UserManagement } from './components/users/UserManagement';
+import { AuditLogDashboard } from './components/audit/AuditLogDashboard';
 import { availableDashboardTabs, canOpenSubmitFeedback, canEncapsulateFeedback, canTransitionWorkflow, canCommentFeedback } from './utils/permissions';
 
 export function App() {
@@ -293,6 +294,10 @@ export function App() {
 
         {currentTab === 'users' && (
           <UserManagement />
+        )}
+
+        {currentTab === 'audit' && (
+          <AuditLogDashboard />
         )}
       </main>
 

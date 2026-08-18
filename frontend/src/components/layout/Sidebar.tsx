@@ -9,7 +9,8 @@ import {
   Sun,
   Moon,
   LogOut,
-  Users
+  Users,
+  History
 } from 'lucide-react';
 import type { UserPersona } from '../../types/feedback';
 
@@ -145,6 +146,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Users size={18} style={{ marginRight: '12px' }} />
             <span>User Management</span>
+          </button>
+        )}
+
+        {allowedTabs.includes('audit') && (
+          <button
+            className={`btn ${currentTab === 'audit' ? 'active' : 'btn-ghost'}`}
+            onClick={() => setCurrentTab('audit')}
+            style={{ justifyContent: 'flex-start', padding: '10px 16px' }}
+          >
+            <History size={18} style={{ marginRight: '12px' }} />
+            <span>Audit Log</span>
           </button>
         )}
       </nav>

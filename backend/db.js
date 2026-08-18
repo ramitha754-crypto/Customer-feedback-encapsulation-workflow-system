@@ -215,6 +215,19 @@ export async function setupDatabase() {
       )
     `);
 
+    // 4. Create system_audit_logs table
+    await currentPool.query(`
+      CREATE TABLE IF NOT EXISTS system_audit_logs (
+        id VARCHAR(100) PRIMARY KEY,
+        timestamp DATETIME NOT NULL,
+        actorId VARCHAR(50),
+        actorName VARCHAR(100),
+        actorRole VARCHAR(50),
+        action VARCHAR(100) NOT NULL,
+        details TEXT
+      )
+    `);
+
     console.log("Tables validated.");
 
     const adminPermissions = JSON.stringify([
@@ -231,7 +244,8 @@ export async function setupDatabase() {
       'DELETE_FEEDBACK',
       'OVERRIDE_SLA',
       'VIEW_ENCAPSULATIONS',
-      'VIEW_OWN_FEEDBACK'
+      'VIEW_OWN_FEEDBACK',
+      'VIEW_AUDIT_LOGS'
     ]);
 
     // Seed users
@@ -313,5 +327,27 @@ export async function setupDatabase() {
 
   } catch (error) {
     console.error('Database setup failed:', error);
+  }
+}
+
+/**
+ * Inserts a record into the system_audit_logs table.
+ * @param {object} pool - The MySQL connection pool.
+ * @param {string|null} actorId - The ID of the user performing the action.
+ * @param {string|null} actorName - The display name of the actor.
+ * @param {string|null} actorRole - The role of the actor.
+ * @param {string} action - A short action label (e.g., 'LOGIN', 'LOGOUT', 'UPDATE_FEEDBACK').
+ * @param {string} details - A human-readable description of what changed.
+ */
+export async function insertAuditLog(pool, actorId, actorName, actorRole, action, details) {
+  try {
+    const id = `sysaud-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    await pool.query(
+      'INSERT INTO system_audit_logs (id, timestamp, actorId, actorName, actorRole, action, details) VALUES (?, NOW(), ?, ?, ?, ?, ?)',
+      [id, actorId || null, actorName || null, actorRole || null, action, details]
+    );
+  } catch (err) {
+    // Non-critical: log but don't throw
+    console.error('Failed to insert audit log:', err);
   }
 }

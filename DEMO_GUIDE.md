@@ -110,6 +110,24 @@ PulseBoard includes pre-configured demo personas to demonstrate role-based acces
 
 ---
 
+### Step 7: Module 5 — System Audit Log
+*Navigation: Click **Audit Log** tab in the sidebar (visible to users with `VIEW_AUDIT_LOGS` permission).*
+
+- **Live Event Table**: Chronological, paginated list of every system event — newest first.
+- **Event types captured**:
+  - 🔐 **AUTH** — `LOGIN` and `LOGOUT` events with actor name, role, and timestamp.
+  - 📋 **FEEDBACK** — `CREATE_FEEDBACK`, `UPDATE_FEEDBACK`, `STAGE_CHANGED`, `ENCAPSULATED`, `DELETE_FEEDBACK`.
+  - 👤 **USER** — `CREATE_USER`, `UPDATE_USER` events with who made the change.
+  - 💬 **COMMENT** — `COMMENT_ADDED` events on feedback items.
+- **Filters**:
+  - Search by actor name, action type, or details text.
+  - Filter by category (Auth, Feedback, User Management, System).
+  - Filter by specific action type.
+- **Pagination**: 25 events per page with total count display.
+- **Refresh**: Click **Refresh** to pull the latest events at any time.
+
+---
+
 ## 🛠️ Demo Submission Test (Live Interactive Flow)
 
 To perform a complete live end-to-end demonstration during a presentation:
